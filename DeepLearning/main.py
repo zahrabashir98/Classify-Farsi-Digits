@@ -76,3 +76,78 @@ if charting == True:
 test_score = model.evaluate(X_test, Y_test, verbose=0)
 print('Test loss:', test_score[0])
 print('Test accuracy:', test_score[1])
+
+# prediction
+y_pre = model.predict(X_test)
+INDEX = []
+for data in y_pre:
+    counter = 0
+    for each in data:
+        if each == 1:
+            index = counter
+            break
+        counter += 1
+    INDEX.append(index)
+
+tn = 0
+tp = 0
+fp = 0
+fn = 0
+
+classes_info = []
+for i in range(10):
+    classes_info.append({'tp': 0, 'tn': 0, 'fp': 0, 'fn': 0})
+
+for i in range(20000):
+
+    if Y_test[i][INDEX[i]] == 1:
+        tp += 1
+        tn += 1
+        classes_info[INDEX[i]]['tp'] += 1
+        classes_info[INDEX[i]]['tn'] -= 1
+    else:
+        fp += 1
+        fn += 1
+        true_class_index = -1
+        for data in Y_test[i]:
+            true_class_index += 1
+            if data == 1:
+                break
+            
+        classes_info[true_class_index]['fp'] += 1
+        classes_info[INDEX[i]]['fn'] += 1
+        classes_info[true_class_index]['tn'] -= 1
+        classes_info[INDEX[i]]['tn'] -= 1
+    
+    for j in range(10):
+            classes_info[j]['tn'] += 1
+
+print("*******************\n")
+
+for i in range(10):
+    print("Class %s : %s\n"%(i,classes_info[i]))
+
+print("*******************\n\n")
+
+def calculate_pre_rec_f1(class_info):
+    try:
+        precision = class_info['tp'] / (class_info['tp'] + class_info['fp'])
+        recall = class_info['tp'] / (class_info['tp'] + class_info['fn'])
+        f1_score = 2*(precision * recall) / (precision + recall)
+    except:
+        print("devide by zero")
+        precision =455
+        recall =455
+        f1_score = 500
+    return precision, recall, f1_score
+
+precision = []
+recall = []
+f1_score = []
+for i in range(10):
+    pre, rec, f1 = calculate_pre_rec_f1(classes_info[i])
+    precision.append(pre)
+    recall.append(rec)
+    f1_score.append(f1)
+    print('Class %s -> Precision: %s * Recall: %s * F1-score: %s' %(i, pre, rec, f1))
+    print("==========================================================\n")
