@@ -151,3 +151,24 @@ for i in range(10):
     f1_score.append(f1)
     print('Class %s -> Precision: %s * Recall: %s * F1-score: %s' %(i, pre, rec, f1))
     print("==========================================================\n")
+
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+
+# Data
+df=pd.DataFrame({'x': range(0,10), 'precision': precision, 'recall': recall, 'f1-score': f1_score })
+
+# multiple line plot
+plt.plot( 'x', 'precision', data=df, marker='o', markerfacecolor='blue', markersize=12, color='skyblue', linewidth=4, label="Precision")
+plt.plot( 'x', 'recall', data=df, marker='*', markerfacecolor='olive', markersize=12, color='olive', linewidth=2, label="Recall")
+plt.plot( 'x', 'f1-score', data=df, marker='', color='red', linewidth=2, linestyle='dashed', label="F1-Score")
+plt.legend()
+plt.show()
+
+
+# compute for entire code
+per_tot = tp / (tp + fp)
+recall_tot = tp / (tp + fn)
+f1_tot = 2 * (per_tot * recall_tot) / (per_tot + recall_tot)
+print('Whole Data set -> Precision: %s * Recall: %s * F1-score: %s\n\n' %(per_tot, recall_tot, f1_tot))
